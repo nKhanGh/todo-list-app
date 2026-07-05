@@ -9,6 +9,7 @@ import com.khangdev.todolistbackend.todo.dto.request.TodoStatusUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
+import com.khangdev.todolistbackend.todo.dto.response.TodoStatisticsResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoStatusHistoryResponse;
 import com.khangdev.todolistbackend.todo.entity.Todo;
 import com.khangdev.todolistbackend.todo.entity.TodoStatusHistory;
@@ -51,6 +52,24 @@ public class TodoServiceImpl implements TodoService {
                 .map(todoMapper::toResponse);
 
         return PageResponse.from(todos);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TodoStatisticsResponse getStatistics() {
+        long total = todoRepository.countByDeletedAtIsNull();
+        long todo = todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.TODO);
+        long inProgress = todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.IN_PROGRESS);
+        long done = todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.DONE);
+        int progress = total == 0 ? 0 : Math.round((done * 100f) / total);
+
+        return TodoStatisticsResponse.builder()
+                .total(total)
+                .todo(todo)
+                .inProgress(inProgress)
+                .done(done)
+                .progress(progress)
+                .build();
     }
 
     @Override

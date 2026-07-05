@@ -16,6 +16,7 @@ import com.khangdev.todolistbackend.todo.dto.request.TodoStatusUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
+import com.khangdev.todolistbackend.todo.dto.response.TodoStatisticsResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoStatusHistoryResponse;
 import com.khangdev.todolistbackend.todo.entity.Todo;
 import com.khangdev.todolistbackend.todo.entity.TodoStatusHistory;
@@ -95,6 +96,38 @@ class TodoServiceImplTest {
         verify(todoRepository).findAll(any(Specification.class), pageableCaptor.capture());
         assertThat(pageableCaptor.getValue().getSort())
                 .isEqualTo(Sort.by(Sort.Direction.ASC, "title"));
+    }
+
+    @Test
+    void getStatisticsShouldReturnCountsAndProgressForActiveTodos() {
+        when(todoRepository.countByDeletedAtIsNull()).thenReturn(8L);
+        when(todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.TODO)).thenReturn(3L);
+        when(todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.IN_PROGRESS)).thenReturn(2L);
+        when(todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.DONE)).thenReturn(3L);
+
+        TodoStatisticsResponse result = todoService.getStatistics();
+
+        assertThat(result.getTotal()).isEqualTo(8L);
+        assertThat(result.getTodo()).isEqualTo(3L);
+        assertThat(result.getInProgress()).isEqualTo(2L);
+        assertThat(result.getDone()).isEqualTo(3L);
+        assertThat(result.getProgress()).isEqualTo(38);
+    }
+
+    @Test
+    void getStatisticsShouldReturnZeroProgressWhenThereAreNoTodos() {
+        when(todoRepository.countByDeletedAtIsNull()).thenReturn(0L);
+        when(todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.TODO)).thenReturn(0L);
+        when(todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.IN_PROGRESS)).thenReturn(0L);
+        when(todoRepository.countByStatusAndDeletedAtIsNull(TodoStatus.DONE)).thenReturn(0L);
+
+        TodoStatisticsResponse result = todoService.getStatistics();
+
+        assertThat(result.getTotal()).isZero();
+        assertThat(result.getTodo()).isZero();
+        assertThat(result.getInProgress()).isZero();
+        assertThat(result.getDone()).isZero();
+        assertThat(result.getProgress()).isZero();
     }
 
     @Test

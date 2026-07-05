@@ -8,6 +8,7 @@ import com.khangdev.todolistbackend.todo.dto.request.TodoStatusUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
+import com.khangdev.todolistbackend.todo.dto.response.TodoStatisticsResponse;
 import com.khangdev.todolistbackend.todo.service.TodoService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -37,6 +38,13 @@ public class TodoController {
             @Valid @ModelAttribute TodoQueryRequest request
     ) {
         PageResponse<TodoResponse> response = todoService.getTodos(request);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<ApiResponse<TodoStatisticsResponse>> getStatistics() {
+        TodoStatisticsResponse response = todoService.getStatistics();
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

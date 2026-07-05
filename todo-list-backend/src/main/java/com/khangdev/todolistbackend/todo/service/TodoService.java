@@ -7,11 +7,14 @@ import com.khangdev.todolistbackend.todo.dto.request.TodoStatusUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
+import com.khangdev.todolistbackend.todo.dto.response.TodoStatisticsResponse;
 import java.util.UUID;
 
 public interface TodoService {
 
     PageResponse<TodoResponse> getTodos(TodoQueryRequest request);
+
+    TodoStatisticsResponse getStatistics();
 
     TodoDetailResponse getTodo(UUID id);
 
