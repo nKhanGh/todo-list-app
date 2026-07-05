@@ -157,12 +157,12 @@ export function TodoDateTimePicker({ value, onChange }: Readonly<TodoDateTimePic
       </button>
 
       {open && (
-        <div className="absolute left-[calc(100%+1.75rem)] -bottom-22.5 z-50 w-[min(21rem,calc(100vw-2rem))] rounded-[1.35rem] border border-[#dfd1c9] bg-[#fffaf6] p-3 text-[#34251e] shadow-[0_22px_54px_rgba(70,37,21,0.22)]">
+        <div className="absolute bottom-[calc(100%+0.5rem)] right-0 right:0 xl:left-[calc(100%+1.75rem)] xl:-bottom-22.5 z-50  xl:w-[min(20rem,calc(100vw))] rounded-[1.35rem] border border-[#dfd1c9] bg-[#fffaf6] p-3 text-[#34251e] shadow-[0_22px_54px_rgba(70,37,21,0.22)]">
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={() => moveMonth(-1)}
-              className="grid size-9 place-items-center rounded-full bg-[#f3ece7] text-[#6b4a38] transition hover:bg-[#eadbd2]"
+              className="grid size-6 xl:size-9 place-items-center rounded-full bg-[#f3ece7] text-[#6b4a38] transition hover:bg-[#eadbd2]"
             >
               <ChevronLeft className="size-4" />
             </button>
@@ -172,17 +172,17 @@ export function TodoDateTimePicker({ value, onChange }: Readonly<TodoDateTimePic
             <button
               type="button"
               onClick={() => moveMonth(1)}
-              className="grid size-9 place-items-center rounded-full bg-[#f3ece7] text-[#6b4a38] transition hover:bg-[#eadbd2]"
+              className="grid size-6 xl:size-9 place-items-center rounded-full bg-[#f3ece7] text-[#6b4a38] transition hover:bg-[#eadbd2]"
             >
               <ChevronRight className="size-4" />
             </button>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 text-center">
+          <div className="grid grid-cols-7 xl:gap-1 text-center">
             {weekdays.map((weekday) => (
               <div
                 key={weekday}
-                className="py-1 text-[11px] font-black text-[#8a7468]"
+                className=" text-[11px] font-black text-[#8a7468]"
               >
                 {weekday}
               </div>
