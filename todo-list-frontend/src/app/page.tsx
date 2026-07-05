@@ -26,7 +26,6 @@ import { FormEvent, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export default function Home() {
-  const [hideCompleted, setHideCompleted] = useState(false);
   const [statusMenuTodoId, setStatusMenuTodoId] = useState<string | null>(null);
   const [actionMenuTodoId, setActionMenuTodoId] = useState<string | null>(null);
   const [detailTodo, setDetailTodo] = useState<TodoResponse | null>(null);
@@ -41,6 +40,7 @@ export default function Home() {
     size: 10,
     sortBy: "createdAt",
     sortDirection: "desc",
+    includeCompleted: true,
   });
 
   const {
@@ -56,13 +56,6 @@ export default function Home() {
   const todos = useMemo(
     () => todosQuery.data?.items ?? [],
     [todosQuery.data?.items]
-  );
-  const visibleTodos = useMemo(
-    () =>
-      hideCompleted
-        ? todos.filter((todo) => todo.status !== "DONE")
-        : todos,
-    [hideCompleted, todos]
   );
 
   const totalElements = todosQuery.data?.totalElements ?? 0;
@@ -223,17 +216,23 @@ export default function Home() {
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
           <TodoList
-            visibleTodos={visibleTodos}
+            visibleTodos={todos}
             totalElements={totalElements}
             totalPages={totalPages}
             filters={filters}
-            hideCompleted={hideCompleted}
+            hideCompleted={!filters.includeCompleted}
             isFetching={todosQuery.isFetching}
             isLoading={todosQuery.isLoading}
             isError={todosQuery.isError}
             statusMenuTodoId={statusMenuTodoId}
             actionMenuTodoId={actionMenuTodoId}
-            onToggleCompleted={() => setHideCompleted((value) => !value)}
+            onToggleCompleted={() =>
+              setFilters((current) => ({
+                ...current,
+                page: 0,
+                includeCompleted: !current.includeCompleted,
+              }))
+            }
             onOpenDetail={openDetail}
             onOpenEdit={openEdit}
             onChangeStatus={changeStatus}

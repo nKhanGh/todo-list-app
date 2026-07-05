@@ -191,6 +191,10 @@ public class TodoServiceImpl implements TodoService {
                 predicates.add(criteriaBuilder.equal(root.get("status"), request.getStatus()));
             }
 
+            if (!request.isIncludeCompleted()) {
+                predicates.add(criteriaBuilder.notEqual(root.get("status"), TodoStatus.DONE));
+            }
+
             if (request.getPriority() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("priority"), request.getPriority()));
             }

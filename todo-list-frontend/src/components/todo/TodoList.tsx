@@ -76,11 +76,11 @@ export function TodoList({
           className="inline-flex items-center gap-1.5 rounded-2xl bg-[#e1f4ee] px-3 py-2 text-xs font-extrabold text-[#1f8f84]"
         >
           {hideCompleted ? (
-            <Eye className="size-4" />
-          ) : (
             <EyeOff className="size-4" />
+          ) : (
+            <Eye className="size-4" />
           )}
-          {hideCompleted ? "Hiện đã xong" : "Ẩn đã xong"}
+          {hideCompleted ? "Ẩn đã xong" : "Hiện đã xong"}
         </button>
       </div>
 

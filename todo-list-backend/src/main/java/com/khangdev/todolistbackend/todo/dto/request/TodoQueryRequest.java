@@ -26,6 +26,9 @@ public class TodoQueryRequest {
 
     private TodoPriority priority;
 
+    @Builder.Default
+    private boolean includeCompleted = true;
+
     @Min(value = 0, message = "Page must be greater than or equal to 0")
     @Builder.Default
     private int page = 0;

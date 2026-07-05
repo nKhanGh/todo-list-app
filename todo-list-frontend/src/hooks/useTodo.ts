@@ -21,6 +21,7 @@ const buildTodoQuery = (filters: TodoFilters): TodoQueryRequest => {
     size: filters.size,
     sortBy: filters.sortBy,
     sortDirection: filters.sortDirection,
+    includeCompleted: filters.includeCompleted,
   };
 }
 

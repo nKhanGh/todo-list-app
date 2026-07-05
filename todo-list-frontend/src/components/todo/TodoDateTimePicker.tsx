@@ -157,7 +157,7 @@ export function TodoDateTimePicker({ value, onChange }: Readonly<TodoDateTimePic
       </button>
 
       {open && (
-        <div className="absolute left-[calc(100%+0.5rem)] bottom-0 z-50 w-[min(21rem,calc(100vw-2rem))] rounded-[1.35rem] border border-[#dfd1c9] bg-[#fffaf6] p-3 text-[#34251e] shadow-[0_22px_54px_rgba(70,37,21,0.22)]">
+        <div className="absolute left-[calc(100%+1.75rem)] -bottom-22.5 z-50 w-[min(21rem,calc(100vw-2rem))] rounded-[1.35rem] border border-[#dfd1c9] bg-[#fffaf6] p-3 text-[#34251e] shadow-[0_22px_54px_rgba(70,37,21,0.22)]">
           <div className="mb-3 flex items-center justify-between">
             <button
               type="button"

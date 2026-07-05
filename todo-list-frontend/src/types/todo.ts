@@ -72,6 +72,7 @@ export interface TodoQueryRequest {
   size?: number;
   sortBy?: TodoSortBy;
   sortDirection?: SortDirection;
+  includeCompleted?: boolean;
 }
 
 export interface TodoFilters {
@@ -82,4 +83,5 @@ export interface TodoFilters {
   size: number;
   sortBy: TodoSortBy;
   sortDirection: SortDirection;
+  includeCompleted: boolean;
 }

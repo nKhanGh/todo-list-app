@@ -1,36 +1,129 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todo List Frontend
 
-## Getting Started
+Frontend Next.js cho ứng dụng quản lý công việc. Giao diện tiếng Việt, responsive, dùng API từ backend Spring Boot.
 
-First, run the development server:
+## Công nghệ
+
+- Next.js 16
+- React 19
+- TypeScript
+- TanStack Query
+- Axios
+- Tailwind CSS
+- shadcn/base-ui style components
+- Lucide React icons
+- Sonner toast
+
+## Tính năng giao diện
+
+- Xem danh sách công việc.
+- Tìm kiếm, lọc theo trạng thái và mức ưu tiên.
+- Ẩn/hiện công việc đã hoàn thành bằng API query, không filter thủ công ở client.
+- Sắp xếp theo ngày tạo, ngày cập nhật, hạn hoàn thành, ưu tiên, trạng thái, tiêu đề.
+- Tạo mới công việc.
+- Chỉnh sửa công việc.
+- Đổi trạng thái trực tiếp từ status badge.
+- Xóa mềm công việc.
+- Xem chi tiết công việc và timeline trạng thái.
+- Hiển thị thống kê từ backend: tổng số, đang làm, hoàn thành, phần trăm tiến độ.
+- Custom select, date-time picker, toast và scrollbar theo màu hệ thống.
+
+## Yêu cầu
+
+- Node.js 20+
+- npm
+- Backend chạy tại `http://localhost:8080/api/v1`
+
+## Cài đặt
+
+```bash
+npm install
+```
+
+## Cấu hình môi trường
+
+Tạo file `.env.local` trong thư mục `todo-list-frontend`:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
+```
+
+Có thể tham khảo file:
+
+```text
+.env.example
+```
+
+## Chạy development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Frontend chạy tại:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Build production
 
-## Learn More
+```bash
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Chạy bản production sau khi build:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Lint
 
-## Deploy on Vercel
+```bash
+npm run lint
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Cấu trúc chính
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+src
+├── app
+│   ├── page.tsx
+│   ├── provider.tsx
+│   └── globals.css
+├── components
+│   ├── todo
+│   └── ui
+├── hooks
+│   └── useTodo.ts
+├── lib
+│   └── axios.ts
+├── services
+│   └── todo.service.ts
+└── types
+    ├── api.ts
+    └── todo.ts
+```
+
+## API sử dụng
+
+Frontend gọi các endpoint:
+
+| Method | Endpoint | Mục đích |
+| --- | --- | --- |
+| GET | `/todos` | Lấy danh sách todo |
+| GET | `/todos/statistics` | Lấy thống kê |
+| GET | `/todos/{id}` | Lấy chi tiết todo |
+| POST | `/todos` | Tạo todo |
+| PUT | `/todos/{id}` | Cập nhật todo |
+| PATCH | `/todos/{id}/status` | Đổi trạng thái |
+| DELETE | `/todos/{id}` | Xóa mềm todo |
+
+## Ghi chú
+
+- `page.tsx` giữ state và handler chính.
+- Các phần UI todo được tách trong `src/components/todo`.
+- Statistics được lấy từ backend qua `useTodoStatistics()`, không tự tính từ page hiện tại ở client.
+- Nút ẩn/hiện việc đã xong cập nhật `includeCompleted` trong query list todo.
+- Sau khi create/update/change status/delete, TanStack Query sẽ invalidate cả list và statistics.
