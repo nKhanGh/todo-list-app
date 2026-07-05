@@ -5,6 +5,8 @@ import com.khangdev.todolistbackend.common.exception.ErrorCode;
 import com.khangdev.todolistbackend.common.response.PageResponse;
 import com.khangdev.todolistbackend.todo.dto.request.TodoCreateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoQueryRequest;
+import com.khangdev.todolistbackend.todo.dto.request.TodoStatusUpdateRequest;
+import com.khangdev.todolistbackend.todo.dto.request.TodoUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoStatusHistoryResponse;
@@ -84,6 +86,34 @@ public class TodoServiceImpl implements TodoService {
         return todoMapper.toResponse(savedTodo);
     }
 
+    @Override
+    @Transactional
+    public TodoResponse updateTodo(UUID id, TodoUpdateRequest request) {
+        Todo todo = findActiveTodo(id);
+
+        todo.setTitle(normalizeTitle(request.getTitle()));
+        todo.setDescription(request.getDescription());
+        todo.setPriority(request.getPriority());
+        todo.setDueDate(request.getDueDate());
+
+        Todo savedTodo = todoRepository.save(todo);
+
+        return todoMapper.toResponse(savedTodo);
+    }
+
+    @Override
+    @Transactional
+    public TodoResponse updateTodoStatus(UUID id, TodoStatusUpdateRequest request) {
+        Todo todo = findActiveTodo(id);
+        TodoStatus oldStatus = todo.getStatus();
+
+        todo.setStatus(request.getStatus());
+        Todo savedTodo = todoRepository.save(todo);
+        createStatusHistoryIfChanged(savedTodo, oldStatus, request.getStatus());
+
+        return todoMapper.toResponse(savedTodo);
+    }
+
     private String normalizeTitle(String title) {
         if (title == null || title.isBlank()) {
             throw new AppException(ErrorCode.VALIDATION_FAILED, "Title is required");
@@ -101,6 +131,20 @@ public class TodoServiceImpl implements TodoService {
         TodoStatusHistory history = TodoStatusHistory.builder()
                 .todo(todo)
                 .toStatus(todo.getStatus())
+                .build();
+
+        todoStatusHistoryRepository.save(history);
+    }
+
+    private void createStatusHistoryIfChanged(Todo todo, TodoStatus fromStatus, TodoStatus toStatus) {
+        if (fromStatus == toStatus) {
+            return;
+        }
+
+        TodoStatusHistory history = TodoStatusHistory.builder()
+                .todo(todo)
+                .fromStatus(fromStatus)
+                .toStatus(toStatus)
                 .build();
 
         todoStatusHistoryRepository.save(history);

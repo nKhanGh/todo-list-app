@@ -1,7 +1,6 @@
 package com.khangdev.todolistbackend.todo.dto.request;
 
 import com.khangdev.todolistbackend.todo.enums.TodoPriority;
-import com.khangdev.todolistbackend.todo.enums.TodoStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,9 +27,6 @@ public class TodoUpdateRequest {
 
     @NotNull(message = "Priority is required")
     private TodoPriority priority;
-
-    @NotNull(message = "Status is required")
-    private TodoStatus status;
 
     private LocalDate dueDate;
 }

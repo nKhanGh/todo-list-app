@@ -3,6 +3,8 @@ package com.khangdev.todolistbackend.todo.service;
 import com.khangdev.todolistbackend.common.response.PageResponse;
 import com.khangdev.todolistbackend.todo.dto.request.TodoCreateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoQueryRequest;
+import com.khangdev.todolistbackend.todo.dto.request.TodoStatusUpdateRequest;
+import com.khangdev.todolistbackend.todo.dto.request.TodoUpdateRequest;
 import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
 import java.util.UUID;
@@ -14,4 +16,8 @@ public interface TodoService {
     TodoDetailResponse getTodo(UUID id);
 
     TodoResponse createTodo(TodoCreateRequest request);
+
+    TodoResponse updateTodo(UUID id, TodoUpdateRequest request);
+
+    TodoResponse updateTodoStatus(UUID id, TodoStatusUpdateRequest request);
 }
