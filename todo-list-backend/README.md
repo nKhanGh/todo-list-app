@@ -85,6 +85,26 @@ Cấu hình hiện tại:
 - Hibernate ddl-auto: `update`
 - CORS cho `http://localhost:3000` và `http://localhost:5173`
 
+`application.yml` đã hỗ trợ biến môi trường để deploy. Có thể xem mẫu tại:
+
+```text
+.env.example
+```
+
+Biến thường cần trên môi trường deploy:
+
+```env
+PORT=8080
+SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/database
+SPRING_DATASOURCE_USERNAME=your_user
+SPRING_DATASOURCE_PASSWORD=your_password
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+SPRING_JPA_SHOW_SQL=false
+CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
+```
+
+Lưu ý: `SPRING_DATASOURCE_URL` cần là JDBC URL, ví dụ `jdbc:postgresql://host:5432/database`.
+
 ## API endpoints
 
 Base URL:

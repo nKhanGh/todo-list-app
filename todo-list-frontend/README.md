@@ -54,6 +54,12 @@ Có thể tham khảo file:
 .env.example
 ```
 
+Khi deploy frontend, đổi biến này sang backend public URL:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain.com/api/v1
+```
+
 ## Chạy development
 
 ```bash
