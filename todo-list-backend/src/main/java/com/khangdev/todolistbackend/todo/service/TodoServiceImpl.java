@@ -5,7 +5,9 @@ import com.khangdev.todolistbackend.common.exception.ErrorCode;
 import com.khangdev.todolistbackend.common.response.PageResponse;
 import com.khangdev.todolistbackend.todo.dto.request.TodoCreateRequest;
 import com.khangdev.todolistbackend.todo.dto.request.TodoQueryRequest;
+import com.khangdev.todolistbackend.todo.dto.response.TodoDetailResponse;
 import com.khangdev.todolistbackend.todo.dto.response.TodoResponse;
+import com.khangdev.todolistbackend.todo.dto.response.TodoStatusHistoryResponse;
 import com.khangdev.todolistbackend.todo.entity.Todo;
 import com.khangdev.todolistbackend.todo.entity.TodoStatusHistory;
 import com.khangdev.todolistbackend.todo.enums.TodoPriority;
@@ -17,6 +19,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +51,20 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public TodoDetailResponse getTodo(UUID id) {
+        Todo todo = findActiveTodo(id);
+        List<TodoStatusHistoryResponse> statusHistories = todoMapper.toHistoryResponses(
+                todoStatusHistoryRepository.findByTodoIdOrderByChangedAtAsc(id)
+        );
+
+        TodoDetailResponse response = todoMapper.toDetailResponse(todo);
+        response.setStatusHistories(statusHistories);
+
+        return response;
+    }
+
+    @Override
     @Transactional
     public TodoResponse createTodo(TodoCreateRequest request) {
         String title = normalizeTitle(request.getTitle());
@@ -73,6 +90,11 @@ public class TodoServiceImpl implements TodoService {
         }
 
         return title.trim();
+    }
+
+    private Todo findActiveTodo(UUID id) {
+        return todoRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND, "Todo not found"));
     }
 
     private void createInitialStatusHistory(Todo todo) {
