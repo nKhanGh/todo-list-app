@@ -5,6 +5,7 @@ import type {
   TodoDetailResponse,
   TodoQueryRequest,
   TodoResponse,
+  TodoStatisticsResponse,
   TodoStatusUpdateRequest,
   TodoUpdateRequest,
 } from "@/types/todo";
@@ -26,6 +27,14 @@ export const todoApi = {
       {
         params: removeEmptyParams(params),
       }
+    );
+
+    return response.data.data;
+  },
+
+  async getStatistics(): Promise<TodoStatisticsResponse> {
+    const response = await api.get<ApiResponse<TodoStatisticsResponse>>(
+      "/todos/statistics"
     );
 
     return response.data.data;

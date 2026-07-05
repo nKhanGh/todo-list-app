@@ -24,6 +24,11 @@ const buildTodoQuery = (filters: TodoFilters): TodoQueryRequest => {
   };
 }
 
+const invalidateTodoQueries = (queryClient: ReturnType<typeof useQueryClient>) => {
+  queryClient.invalidateQueries({ queryKey: ["todos"] });
+  queryClient.invalidateQueries({ queryKey: ["todo-statistics"] });
+}
+
 export const useTodos = (filters: TodoFilters) => {
   const queryClient = useQueryClient();
 
@@ -37,7 +42,7 @@ export const useTodos = (filters: TodoFilters) => {
   const createTodoMutation = useMutation({
     mutationFn: (data: TodoCreateRequest) => todoApi.createTodo(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      invalidateTodoQueries(queryClient);
     },
   });
 
@@ -47,10 +52,10 @@ export const useTodos = (filters: TodoFilters) => {
       data,
     }: {
       id: string;
-      data: TodoUpdateRequest;
+        data: TodoUpdateRequest;
     }) => todoApi.updateTodo(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      invalidateTodoQueries(queryClient);
     },
   });
 
@@ -60,17 +65,17 @@ export const useTodos = (filters: TodoFilters) => {
       data,
     }: {
       id: string;
-      data: TodoStatusUpdateRequest;
+        data: TodoStatusUpdateRequest;
     }) => todoApi.updateTodoStatus(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      invalidateTodoQueries(queryClient);
     },
   });
 
   const deleteTodoMutation = useMutation({
     mutationFn: (id: string) => todoApi.deleteTodo(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      invalidateTodoQueries(queryClient);
     },
   });
 
@@ -81,6 +86,13 @@ export const useTodos = (filters: TodoFilters) => {
     updateTodoStatusMutation,
     deleteTodoMutation,
   };
+}
+
+export function useTodoStatistics() {
+  return useQuery({
+    queryKey: ["todo-statistics"],
+    queryFn: () => todoApi.getStatistics(),
+  });
 }
 
 export function useTodoDetail(id?: string) {

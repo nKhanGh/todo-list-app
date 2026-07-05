@@ -38,6 +38,14 @@ export interface TodoDetailResponse extends TodoResponse {
   statusHistories: TodoStatusHistoryResponse[];
 }
 
+export interface TodoStatisticsResponse {
+  total: number;
+  todo: number;
+  inProgress: number;
+  done: number;
+  progress: number;
+}
+
 export interface TodoCreateRequest {
   title: string;
   description?: string | null;
