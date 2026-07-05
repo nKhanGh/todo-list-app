@@ -1,6 +1,16 @@
 # Todo List App
 
-Ứng dụng quản lý công việc theo đề bài Intern Developer. Dự án gồm backend Spring Boot và frontend Next.js.
+Ứng dụng quản lý công việc được xây dựng với backend Spring Boot và frontend Next.js.
+
+## Demo
+
+Ứng dụng đã deploy tại:
+
+```text
+https://todo-list-app-five-delta.vercel.app/
+```
+
+Lưu ý: backend deploy trên Render có thể sleep khi không có request trong một thời gian. Nếu lần đầu mở app thấy dữ liệu tải hơi lâu, hãy đợi khoảng 30-60 giây để service wake up rồi thử lại.
 
 ## Tính năng
 
