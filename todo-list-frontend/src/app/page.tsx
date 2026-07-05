@@ -1,65 +1,283 @@
-import Image from "next/image";
+"use client";
+
+import { TodoFilters } from "@/components/todo/TodoFilters";
+import { TodoDetailModal } from "@/components/todo/TodoDetailModal";
+import { TodoHeader } from "@/components/todo/TodoHeader";
+import { TodoList } from "@/components/todo/TodoList";
+import { TodoModal } from "@/components/todo/TodoModal";
+import { TodoProgressSummary } from "@/components/todo/TodoProgressSummary";
+import { TodoSidebar } from "@/components/todo/TodoSidebar";
+import { emptyTodoForm, statusLabel } from "@/components/todo/todo.constants";
+import { toInputDateTime } from "@/components/todo/todo.utils";
+import {
+  createStatusUpdate,
+  useTodoDetail,
+  useTodos,
+  useTodoStatistics,
+} from "@/hooks/useTodo";
+import type {
+  TodoCreateRequest,
+  TodoFilters as TodoFiltersState,
+  TodoResponse,
+  TodoStatus,
+} from "@/types/todo";
+import { Plus } from "lucide-react";
+import { FormEvent, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
+  const [hideCompleted, setHideCompleted] = useState(false);
+  const [statusMenuTodoId, setStatusMenuTodoId] = useState<string | null>(null);
+  const [actionMenuTodoId, setActionMenuTodoId] = useState<string | null>(null);
+  const [detailTodo, setDetailTodo] = useState<TodoResponse | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<TodoResponse | null>(null);
+  const [form, setForm] = useState<TodoCreateRequest>(emptyTodoForm);
+  const [filters, setFilters] = useState<TodoFiltersState>({
+    search: "",
+    status: "ALL",
+    priority: "ALL",
+    page: 0,
+    size: 10,
+    sortBy: "createdAt",
+    sortDirection: "desc",
+  });
+
+  const {
+    todosQuery,
+    createTodoMutation,
+    updateTodoMutation,
+    updateTodoStatusMutation,
+    deleteTodoMutation,
+  } = useTodos(filters);
+  const todoStatisticsQuery = useTodoStatistics();
+  const todoDetailQuery = useTodoDetail(detailTodo?.id);
+
+  const todos = useMemo(
+    () => todosQuery.data?.items ?? [],
+    [todosQuery.data?.items]
+  );
+  const visibleTodos = useMemo(
+    () =>
+      hideCompleted
+        ? todos.filter((todo) => todo.status !== "DONE")
+        : todos,
+    [hideCompleted, todos]
+  );
+
+  const totalElements = todosQuery.data?.totalElements ?? 0;
+  const totalPages = todosQuery.data?.totalPages ?? 0;
+  const statistics = todoStatisticsQuery.data;
+  const doneCount = statistics?.done ?? 0;
+  const inProgressCount = statistics?.inProgress ?? 0;
+  const todoCount = statistics?.todo ?? 0;
+  const totalTodoCount = statistics?.total ?? 0;
+  const progress = statistics?.progress ?? 0;
+  const everythingDone = totalTodoCount > 0 && doneCount === totalTodoCount;
+  const isSaving =
+    createTodoMutation.isPending || updateTodoMutation.isPending;
+
+  const openCreate = () => {
+    setEditingTodo(null);
+    setActionMenuTodoId(null);
+    setForm(emptyTodoForm);
+    setModalOpen(true);
+  };
+
+  const openEdit = (todo: TodoResponse) => {
+    setActionMenuTodoId(null);
+    setEditingTodo(todo);
+    setForm({
+      title: todo.title,
+      description: todo.description ?? "",
+      priority: todo.priority,
+      dueDate: toInputDateTime(todo.dueDate),
+    });
+    setModalOpen(true);
+  };
+
+  const openDetail = (todo: TodoResponse) => {
+    setActionMenuTodoId(null);
+    setDetailTodo(todo);
+  };
+
+  const closeDetail = () => {
+    setDetailTodo(null);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setEditingTodo(null);
+    setForm(emptyTodoForm);
+  };
+
+  const toggleStatusMenu = (todoId: string) => {
+    setActionMenuTodoId(null);
+    setStatusMenuTodoId((current) => (current === todoId ? null : todoId));
+  };
+
+  const toggleActionMenu = (todoId: string) => {
+    setStatusMenuTodoId(null);
+    setActionMenuTodoId((current) => (current === todoId ? null : todoId));
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const payload: TodoCreateRequest = {
+      title: form.title.trim(),
+      description: form.description?.trim() || null,
+      priority: form.priority || "MEDIUM",
+      dueDate: form.dueDate || null,
+    };
+
+    if (!payload.title) {
+      toast.error("Vui lòng nhập tiêu đề");
+      return;
+    }
+
+    try {
+      if (editingTodo) {
+        await updateTodoMutation.mutateAsync({
+          id: editingTodo.id,
+          data: {
+            title: payload.title,
+            description: payload.description,
+            priority: payload.priority ?? "MEDIUM",
+            dueDate: payload.dueDate,
+          },
+        });
+        toast.success("Đã cập nhật công việc");
+      } else {
+        await createTodoMutation.mutateAsync(payload);
+        toast.success("Đã tạo công việc");
+      }
+
+      closeModal();
+    } catch {
+      toast.error("Không thể lưu công việc");
+    }
+  };
+
+  const changeStatus = async (todo: TodoResponse, status: TodoStatus) => {
+    setStatusMenuTodoId(null);
+
+    if (todo.status === status) {
+      return;
+    }
+
+    try {
+      await updateTodoStatusMutation.mutateAsync({
+        id: todo.id,
+        data: createStatusUpdate(status),
+      });
+      toast.success(`Đã chuyển sang ${statusLabel[status]}`);
+    } catch {
+      toast.error("Không thể đổi trạng thái");
+    }
+  };
+
+  const deleteTodo = async (todo: TodoResponse) => {
+    setActionMenuTodoId(null);
+
+    try {
+      await deleteTodoMutation.mutateAsync(todo.id);
+      toast.success("Đã xóa công việc");
+    } catch {
+      toast.error("Không thể xóa công việc");
+    }
+  };
+
+  const goToPreviousPage = () => {
+    setFilters((current) => ({
+      ...current,
+      page: Math.max(0, current.page - 1),
+    }));
+  };
+
+  const goToNextPage = () => {
+    setFilters((current) => ({
+      ...current,
+      page: current.page + 1,
+    }));
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-[#f5eee9] text-[#1f2937]">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-5 pb-24 sm:px-6 lg:px-8 lg:pb-8">
+        <TodoHeader
+          isFetching={todosQuery.isFetching}
+          onRefresh={() => todosQuery.refetch()}
+          onCreate={openCreate}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+
+        <TodoProgressSummary
+          doneCount={doneCount}
+          inProgressCount={inProgressCount}
+          totalCount={totalTodoCount}
+          progress={progress}
+          everythingDone={everythingDone}
+        />
+
+        <TodoFilters filters={filters} setFilters={setFilters} />
+
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <TodoList
+            visibleTodos={visibleTodos}
+            totalElements={totalElements}
+            totalPages={totalPages}
+            filters={filters}
+            hideCompleted={hideCompleted}
+            isFetching={todosQuery.isFetching}
+            isLoading={todosQuery.isLoading}
+            isError={todosQuery.isError}
+            statusMenuTodoId={statusMenuTodoId}
+            actionMenuTodoId={actionMenuTodoId}
+            onToggleCompleted={() => setHideCompleted((value) => !value)}
+            onOpenDetail={openDetail}
+            onOpenEdit={openEdit}
+            onChangeStatus={changeStatus}
+            onDeleteTodo={deleteTodo}
+            onToggleStatusMenu={toggleStatusMenu}
+            onToggleActionMenu={toggleActionMenu}
+            onPreviousPage={goToPreviousPage}
+            onNextPage={goToNextPage}
+          />
+
+          <TodoSidebar
+            todoCount={todoCount}
+            inProgressCount={inProgressCount}
+            doneCount={doneCount}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={openCreate}
+        className="fixed bottom-5 left-1/2 z-30 grid size-14 -translate-x-1/2 place-items-center rounded-full bg-[#1f8f84] text-white shadow-[0_16px_30px_rgba(31,143,132,0.35)] lg:hidden"
+      >
+        <Plus className="size-8" />
+      </button>
+
+      <TodoModal
+        open={modalOpen}
+        editingTodo={editingTodo}
+        form={form}
+        setForm={setForm}
+        isSaving={isSaving}
+        onClose={closeModal}
+        onSubmit={handleSubmit}
+      />
+
+      <TodoDetailModal
+        open={Boolean(detailTodo)}
+        todo={detailTodo}
+        detail={todoDetailQuery.data}
+        isLoading={todoDetailQuery.isLoading}
+        isError={todoDetailQuery.isError}
+        onClose={closeDetail}
+      />
+    </main>
   );
 }
