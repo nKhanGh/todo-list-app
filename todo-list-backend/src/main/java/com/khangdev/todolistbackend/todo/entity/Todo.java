@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -50,7 +49,7 @@ public class Todo {
     @Column(nullable = false, length = 20)
     private TodoPriority priority = TodoPriority.MEDIUM;
 
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

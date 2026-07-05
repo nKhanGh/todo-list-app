@@ -2,7 +2,6 @@ package com.khangdev.todolistbackend.todo.dto.response;
 
 import com.khangdev.todolistbackend.todo.enums.TodoPriority;
 import com.khangdev.todolistbackend.todo.enums.TodoStatus;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -28,7 +27,7 @@ public class TodoResponse {
 
     private TodoPriority priority;
 
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     private LocalDateTime createdAt;
 

@@ -4,7 +4,7 @@ import com.khangdev.todolistbackend.todo.enums.TodoPriority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,5 +28,5 @@ public class TodoUpdateRequest {
     @NotNull(message = "Priority is required")
     private TodoPriority priority;
 
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 }

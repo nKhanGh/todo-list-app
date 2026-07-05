@@ -3,7 +3,7 @@ package com.khangdev.todolistbackend.todo.dto.request;
 import com.khangdev.todolistbackend.todo.enums.TodoPriority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,5 +26,5 @@ public class TodoCreateRequest {
 
     private TodoPriority priority;
 
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 }
