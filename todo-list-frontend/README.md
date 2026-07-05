@@ -84,6 +84,24 @@ Chạy bản production sau khi build:
 npm run start
 ```
 
+## Docker image
+
+Build frontend image:
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1 \
+  -t todo-list-frontend .
+```
+
+Chạy frontend image:
+
+```bash
+docker run --rm -p 3000:3000 todo-list-frontend
+```
+
+Lưu ý: `NEXT_PUBLIC_API_BASE_URL` là biến public của Next.js, nên cần truyền lúc build image frontend.
+
 ## Lint
 
 ```bash

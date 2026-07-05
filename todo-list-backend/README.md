@@ -261,6 +261,27 @@ Test hiện có:
 - Todo service unit tests với JUnit 5 và Mockito.
 - Test CRUD behavior, validation, soft delete, status history và statistics.
 
+## Docker image
+
+Build backend image:
+
+```bash
+docker build -t todo-list-backend .
+```
+
+Chạy backend image:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/todo_db \
+  -e SPRING_DATASOURCE_USERNAME=todo_user \
+  -e SPRING_DATASOURCE_PASSWORD=todo_password \
+  -e CORS_ALLOWED_ORIGINS=http://localhost:3000 \
+  todo-list-backend
+```
+
+Khi deploy, set các biến môi trường tương ứng trong `.env.example`.
+
 ## Dừng database local
 
 ```bash

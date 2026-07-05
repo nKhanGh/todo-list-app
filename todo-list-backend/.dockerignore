@@ -1,0 +1,8 @@
+.env
+.idea
+.mvn
+target
+*.iml
+HELP.md
+README.md
+docker-compose.yml

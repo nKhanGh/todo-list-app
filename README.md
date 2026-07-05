@@ -201,6 +201,43 @@ npm run lint
 npm run build
 ```
 
+## Docker build
+
+Backend image:
+
+```bash
+cd todo-list-backend
+docker build -t todo-list-backend .
+```
+
+Chạy backend image:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/todo_db \
+  -e SPRING_DATASOURCE_USERNAME=todo_user \
+  -e SPRING_DATASOURCE_PASSWORD=todo_password \
+  -e CORS_ALLOWED_ORIGINS=http://localhost:3000 \
+  todo-list-backend
+```
+
+Frontend image:
+
+```bash
+cd todo-list-frontend
+docker build \
+  --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1 \
+  -t todo-list-frontend .
+```
+
+Chạy frontend image:
+
+```bash
+docker run --rm -p 3000:3000 todo-list-frontend
+```
+
+Lưu ý: `NEXT_PUBLIC_API_BASE_URL` là biến public của Next.js, nên cần truyền lúc build image frontend.
+
 ## Dừng môi trường local
 
 ```bash
