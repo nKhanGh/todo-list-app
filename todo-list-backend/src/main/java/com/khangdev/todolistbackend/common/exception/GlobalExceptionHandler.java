@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,6 +25,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
+        List<FieldErrorResponse> errors = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> FieldErrorResponse.builder()
+                        .field(error.getField())
+                        .message(error.getDefaultMessage())
+                        .build())
+                .toList();
+
+        return buildValidationErrorResponse(errors);
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBindException(BindException exception) {
         List<FieldErrorResponse> errors = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
