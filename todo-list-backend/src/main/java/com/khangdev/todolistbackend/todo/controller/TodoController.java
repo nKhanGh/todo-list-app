@@ -14,6 +14,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -73,5 +74,12 @@ public class TodoController {
         TodoResponse response = todoService.updateTodoStatus(id, request);
 
         return ResponseEntity.ok(ApiResponse.success(response, "Todo status updated successfully"));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteTodo(@PathVariable UUID id) {
+        todoService.deleteTodo(id);
+
+        return ResponseEntity.ok(ApiResponse.success(null, "Todo deleted successfully"));
     }
 }

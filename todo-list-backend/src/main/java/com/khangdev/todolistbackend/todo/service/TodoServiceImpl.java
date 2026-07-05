@@ -18,6 +18,7 @@ import com.khangdev.todolistbackend.todo.mapper.TodoMapper;
 import com.khangdev.todolistbackend.todo.repository.TodoRepository;
 import com.khangdev.todolistbackend.todo.repository.TodoStatusHistoryRepository;
 import jakarta.persistence.criteria.Predicate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -112,6 +113,14 @@ public class TodoServiceImpl implements TodoService {
         createStatusHistoryIfChanged(savedTodo, oldStatus, request.getStatus());
 
         return todoMapper.toResponse(savedTodo);
+    }
+
+    @Override
+    @Transactional
+    public void deleteTodo(UUID id) {
+        Todo todo = findActiveTodo(id);
+        todo.setDeletedAt(LocalDateTime.now());
+        todoRepository.save(todo);
     }
 
     private String normalizeTitle(String title) {
