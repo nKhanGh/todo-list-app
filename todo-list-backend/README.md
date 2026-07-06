@@ -95,15 +95,24 @@ Biến thường cần trên môi trường deploy:
 
 ```env
 PORT=8080
+SERVER_SERVLET_CONTEXT_PATH=/api/v1
 SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/database
 SPRING_DATASOURCE_USERNAME=your_user
 SPRING_DATASOURCE_PASSWORD=your_password
 SPRING_JPA_HIBERNATE_DDL_AUTO=update
 SPRING_JPA_SHOW_SQL=false
 CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
+CORS_ALLOWED_METHODS=GET,POST,PUT,PATCH,DELETE,OPTIONS
+CORS_ALLOWED_HEADERS=*
+CORS_ALLOW_CREDENTIALS=true
+CORS_MAX_AGE=3600
 ```
 
-Lưu ý: `SPRING_DATASOURCE_URL` cần là JDBC URL, ví dụ `jdbc:postgresql://host:5432/database`.
+Lưu ý:
+
+- `SPRING_DATASOURCE_URL` cần là JDBC URL, ví dụ `jdbc:postgresql://host:5432/database`.
+- `SERVER_SERVLET_CONTEXT_PATH` mặc định là `/api/v1`; nếu đổi biến này thì frontend cũng cần đổi `NEXT_PUBLIC_API_BASE_URL` tương ứng.
+- `CORS_ALLOWED_ORIGINS` có thể nhận nhiều origin, ngăn cách bằng dấu phẩy.
 
 ## API endpoints
 

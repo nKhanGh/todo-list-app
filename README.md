@@ -246,7 +246,10 @@ Chạy frontend image:
 docker run --rm -p 3000:3000 todo-list-frontend
 ```
 
-Lưu ý: `NEXT_PUBLIC_API_BASE_URL` là biến public của Next.js, nên cần truyền lúc build image frontend.
+Lưu ý:
+
+- `NEXT_PUBLIC_API_BASE_URL` là biến public của Next.js, nên cần truyền lúc build image frontend.
+- Frontend Dockerfile đã set sẵn `NODE_ENV=production`, `PORT=3000`, `HOSTNAME=0.0.0.0`; chỉ cần override `PORT` nếu muốn chạy container bằng port khác.
 
 ## Dừng môi trường local
 
@@ -280,10 +283,17 @@ Các biến quan trọng:
 
 ```env
 PORT=8080
+SERVER_SERVLET_CONTEXT_PATH=/api/v1
 SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/database
 SPRING_DATASOURCE_USERNAME=your_user
 SPRING_DATASOURCE_PASSWORD=your_password
+SPRING_JPA_HIBERNATE_DDL_AUTO=update
+SPRING_JPA_SHOW_SQL=false
 CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
+CORS_ALLOWED_METHODS=GET,POST,PUT,PATCH,DELETE,OPTIONS
+CORS_ALLOWED_HEADERS=*
+CORS_ALLOW_CREDENTIALS=true
+CORS_MAX_AGE=3600
 ```
 
 Frontend đọc API URL từ:
@@ -291,3 +301,9 @@ Frontend đọc API URL từ:
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain.com/api/v1
 ```
+
+Lưu ý:
+
+- `SPRING_DATASOURCE_URL` phải là JDBC URL, ví dụ `jdbc:postgresql://host:5432/database`.
+- `CORS_ALLOWED_ORIGINS` có thể nhận nhiều domain, ngăn cách bằng dấu phẩy, ví dụ `https://todo-list-app-five-delta.vercel.app,http://localhost:3000`.
+- `NEXT_PUBLIC_API_BASE_URL` cần trỏ tới backend public URL và giữ đúng context path `/api/v1`.

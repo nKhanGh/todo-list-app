@@ -60,6 +60,14 @@ Khi deploy frontend, đổi biến này sang backend public URL:
 NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain.com/api/v1
 ```
 
+Biến môi trường:
+
+| Biến | Bắt buộc | Ví dụ | Ghi chú |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_API_BASE_URL` | Có | `https://your-backend-domain.com/api/v1` | Public URL của backend, cần bao gồm context path `/api/v1`. |
+
+Lưu ý: với Next.js, biến `NEXT_PUBLIC_API_BASE_URL` được đóng gói vào bundle client, nên cần cấu hình đúng trước khi build/deploy.
+
 ## Chạy development
 
 ```bash
@@ -100,7 +108,10 @@ Chạy frontend image:
 docker run --rm -p 3000:3000 todo-list-frontend
 ```
 
-Lưu ý: `NEXT_PUBLIC_API_BASE_URL` là biến public của Next.js, nên cần truyền lúc build image frontend.
+Lưu ý:
+
+- `NEXT_PUBLIC_API_BASE_URL` là biến public của Next.js, nên cần truyền lúc build image frontend.
+- Dockerfile đã set sẵn `NODE_ENV=production`, `PORT=3000`, `HOSTNAME=0.0.0.0`; chỉ cần override `PORT` nếu muốn chạy container bằng port khác.
 
 ## Lint
 
