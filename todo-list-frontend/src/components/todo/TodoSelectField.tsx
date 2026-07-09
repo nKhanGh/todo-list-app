@@ -4,17 +4,20 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 type TodoSelectFieldProps<T extends string> = {
   value: T;
   onChange: (value: T) => void;
   options: { value: T; label: string }[];
+  triggerClassName?: string;
 };
 
 export function TodoSelectField<T extends string>({
   value,
   onChange,
   options,
+  triggerClassName,
 }: Readonly<TodoSelectFieldProps<T>>) {
   const selectedLabel =
     options.find((option) => option.value === value)?.label ?? value;
@@ -28,7 +31,12 @@ export function TodoSelectField<T extends string>({
         }
       }}
     >
-      <SelectTrigger className="h-11 w-full rounded-2xl border-[#ddcec5] bg-[#fffaf6] px-3 text-sm font-semibold text-[#34251e] shadow-none transition hover:border-[#cbb8ae] focus-visible:border-[#1f8f84] focus-visible:ring-[#bfe8df]">
+      <SelectTrigger
+        className={cn(
+          "h-11 w-full rounded-2xl border-[#ddcec5] bg-[#fffaf6] px-3 text-sm font-semibold text-[#34251e] shadow-none transition hover:border-[#cbb8ae] focus-visible:border-[#1f8f84] focus-visible:ring-[#bfe8df]",
+          triggerClassName
+        )}
+      >
         <span className="flex flex-1 text-left">{selectedLabel}</span>
       </SelectTrigger>
       <SelectContent

@@ -92,6 +92,7 @@ export function TodoModal({
                   value: priority,
                   label: priorityLabel[priority],
                 }))}
+                triggerClassName="h-12 bg-white"
               />
             </TodoField>
 

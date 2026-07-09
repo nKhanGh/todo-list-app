@@ -147,7 +147,7 @@ export function TodoDateTimePicker({ value, onChange }: Readonly<TodoDateTimePic
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-2xl border border-[#dfd1c9] bg-white px-3 text-left text-sm font-semibold text-[#2f2521] outline-none transition hover:border-[#cbb8ae] focus:border-[#1f8f84] focus:ring-4 focus:ring-[#bfe8df]"
+        className="flex h-12 w-full min-w-0 items-center justify-between gap-2 rounded-2xl border border-[#dfd1c9] bg-white px-3 text-left text-sm font-semibold text-[#2f2521] outline-none transition hover:border-[#cbb8ae] focus:border-[#1f8f84] focus:ring-4 focus:ring-[#bfe8df]"
       >
         <span className="flex min-w-0 items-center gap-2 truncate">
           <CalendarDays className="size-4 shrink-0 text-[#8a7468]" />
